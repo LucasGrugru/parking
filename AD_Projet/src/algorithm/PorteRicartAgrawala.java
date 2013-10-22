@@ -1,10 +1,12 @@
 package algorithm;
 
+import java.net.MalformedURLException;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 
 public class PorteRicartAgrawala extends Porte {
 
-	protected PorteRicartAgrawala() throws RemoteException {
+	protected PorteRicartAgrawala() throws RemoteException, MalformedURLException, NotBoundException {
 		super();
 		// TODO Auto-generated constructor stub
 	}

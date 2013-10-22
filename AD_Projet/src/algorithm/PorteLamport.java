@@ -1,5 +1,7 @@
 package algorithm;
 
+import java.net.MalformedURLException;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 
 /**
@@ -8,7 +10,7 @@ import java.rmi.RemoteException;
  */
 public class PorteLamport extends Porte {
 	
-	protected PorteLamport() throws RemoteException {
+	protected PorteLamport() throws RemoteException, MalformedURLException, NotBoundException {
 		super();
 		// TODO Auto-generated constructor stub
 	}

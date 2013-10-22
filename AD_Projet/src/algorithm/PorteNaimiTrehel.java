@@ -1,5 +1,7 @@
 package algorithm;
 
+import java.net.MalformedURLException;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 
 public class PorteNaimiTrehel  extends Porte {
@@ -24,7 +26,7 @@ public class PorteNaimiTrehel  extends Porte {
 	 */
 	public boolean sc;
 	
-	public PorteNaimiTrehel() throws RemoteException {
+	public PorteNaimiTrehel() throws RemoteException, MalformedURLException, NotBoundException {
 		super();
 		this.owner = 0;
 		this.next = 0;
