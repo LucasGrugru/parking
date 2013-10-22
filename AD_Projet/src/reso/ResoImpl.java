@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -64,7 +65,8 @@ public class ResoImpl extends UnicastRemoteObject implements Reso {
 
 	@Override
 	public Set<Integer> getClients() throws RemoteException {
-		return clients.keySet();
+		// need to build a new set because clients.keySet() is not Serializable
+		return new TreeSet<Integer>(clients.keySet());
 	}
 
 	@Override
