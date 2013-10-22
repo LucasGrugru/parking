@@ -24,8 +24,8 @@ public class testPorte {
 		LocateRegistry.createRegistry(1099);
 		r = new ResoImpl();
 		registry = LocateRegistry.getRegistry();
-	    registry.rebind(Reso.NAME, r);
-	    p = new Parking(10);
+		registry.rebind(Reso.NAME, r);
+		p = new Parking(10);
 	}
 	
 	@Test
