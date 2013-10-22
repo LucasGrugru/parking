@@ -85,18 +85,36 @@ public class PorteNaimiTrehel  extends Porte {
 	
 	@Override
 	public void demandeEntree() {
-		// TODO auto-generated method stub
+		try {
+			demandeSectionCritique();
+		} catch (RemoteException e) {
+			System.out.println("[PORTE] error, RemoteException dans DemandeEntree()");
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			System.out.println("[PORTE] error, InterruptedException dans DemandeEntree()");
+			e.printStackTrace();
+		}
 	}
 	
 	@Override
 	public void demandeSortie() {
-		// TODO auto-generated method stub
+		try {
+			sortieSectionCritique();
+		} catch (RemoteException e) {
+			System.out.println("[PORTE] error, RemoteException dans DemandeSortie()");
+			e.printStackTrace();
+		}
 	}
 	
 	@Override
 	public void receiveMessage(int from, int to, Serializable msg)
 			throws RemoteException {
-		
-		
+		if(((Message)msg).message == "JETON") {
+			accepteJETON();
+		} else if(((Message)msg).message == "REQ") {
+			accepteREQ(from, ((Message)msg).demandeur);
+		} else {
+			System.out.println("[PORTE] Error, unknown receive message.");
+		}
 	}
 }
