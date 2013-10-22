@@ -1,5 +1,7 @@
 package algorithm;
 
+import java.rmi.RemoteException;
+
 public class PorteNaimiTrehel  extends Porte {
 	
 	/**
@@ -22,7 +24,7 @@ public class PorteNaimiTrehel  extends Porte {
 	 */
 	public boolean sc;
 	
-	public PorteNaimiTrehel() {
+	public PorteNaimiTrehel() throws RemoteException {
 		super();
 		this.owner = 0;
 		this.next = 0;
