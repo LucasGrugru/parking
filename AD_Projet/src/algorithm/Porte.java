@@ -14,9 +14,13 @@ public class Porte extends UnicastRemoteObject implements iPorte, Client {
 
 	protected Reso reso;
 	protected int id;
+	protected int placeDisponible;
+	protected final int placeTotal;
 	
-	public Porte() throws RemoteException, MalformedURLException, NotBoundException {
+	public Porte(int place) throws RemoteException, MalformedURLException, NotBoundException {
 		super();
+		this.placeDisponible = place;
+		this.placeTotal = place;
 		this.reso = (Reso)Naming.lookup(Reso.NAME);
 		this.id = this.reso.declareClient(this);
 	}

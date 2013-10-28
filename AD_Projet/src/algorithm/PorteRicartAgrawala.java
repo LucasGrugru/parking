@@ -6,8 +6,8 @@ import java.rmi.RemoteException;
 
 public class PorteRicartAgrawala extends Porte {
 
-	protected PorteRicartAgrawala() throws RemoteException, MalformedURLException, NotBoundException {
-		super();
+	protected PorteRicartAgrawala(int place) throws RemoteException, MalformedURLException, NotBoundException {
+		super(place);
 		// TODO Auto-generated constructor stub
 	}
 

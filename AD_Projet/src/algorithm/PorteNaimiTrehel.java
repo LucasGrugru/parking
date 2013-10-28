@@ -9,11 +9,13 @@ public class PorteNaimiTrehel  extends Porte {
 	
 	/**
 	 * Identifiant supposé du processus possédant le jeton
+	 * -1 pour nil
 	 */
 	public int owner;
 	
 	/**
 	 * Identifiant du processus suivant à qui envoyer le jeton
+	 * -1 pour nil
 	 */
 	public int next;
 	
@@ -27,20 +29,17 @@ public class PorteNaimiTrehel  extends Porte {
 	 */
 	public boolean sc;
 	
-	public PorteNaimiTrehel() throws RemoteException, MalformedURLException, NotBoundException {
-		super();
+	public PorteNaimiTrehel(int place) throws RemoteException, MalformedURLException, NotBoundException {
+		super(place);
 		this.owner = 0;
-		if(this.owner == super.id)
-			this.owner = -1;
-		
-		this.next = 0;
-		
-		if(super.id == 0)
-			this.jeton = true;
-		else
-			this.jeton = false;
-		
 		this.sc = false;
+		this.jeton = false;
+		this.next = -1;
+		
+		if(super.id == 0) {
+			this.owner = -1;
+			this.jeton = true;
+		}
 	}
 	
 	private void demandeSectionCritique() throws RemoteException, InterruptedException {
@@ -71,6 +70,9 @@ public class PorteNaimiTrehel  extends Porte {
 	
 	private void accepteJETON() {
 		this.jeton = true;
+		//SECTION CRITIQUE
+		
+		//
 		notifyAll();
 	}
 	

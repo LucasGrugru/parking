@@ -10,8 +10,8 @@ import java.rmi.RemoteException;
  */
 public class PorteLamport extends Porte {
 	
-	protected PorteLamport() throws RemoteException, MalformedURLException, NotBoundException {
-		super();
+	protected PorteLamport(int place) throws RemoteException, MalformedURLException, NotBoundException {
+		super(place);
 		// TODO Auto-generated constructor stub
 	}
 
