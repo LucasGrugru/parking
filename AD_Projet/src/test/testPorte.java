@@ -1,9 +1,12 @@
 package test;
 
+import java.rmi.AccessException;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -21,23 +24,28 @@ public class testPorte {
 	
 	@Before
 	public void init() throws RemoteException {
-		LocateRegistry.createRegistry(1099);
 		r = new ResoImpl();
-		registry = LocateRegistry.getRegistry();
+		registry = LocateRegistry.createRegistry(1199);
 		registry.rebind(Reso.NAME, r);
 		p = new Parking(10);
 	}
 	
+	@After
+	public void finish() throws AccessException, RemoteException, NotBoundException {
+		registry.unbind(Reso.NAME);
+	}
+	
 	@Test
-	public void testCreation(){
+	public void testCreation() throws RemoteException{
 		Assert.assertEquals(this.p.portes.size(), 10);
 	}
 	
 	@Test
 	public void testDemande() throws RemoteException{
-		this.p.demandeEntree(0);
-		System.out.println(((PorteNaimiTrehel)this.p.portes.get(0)).next);
-		Assert.assertEquals(((PorteNaimiTrehel)this.p.portes.get(0)).next, -1);
+		this.p.demandeEntree(1);
+		Assert.assertEquals(((PorteNaimiTrehel)this.p.portes.get(1)).next, -1);
 	}
+	
+	
 
 }

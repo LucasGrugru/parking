@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.util.Set;
 
 public class PorteNaimiTrehel  extends Porte {
 	
@@ -41,7 +42,7 @@ public class PorteNaimiTrehel  extends Porte {
 			this.jeton = true;
 		}
 	}
-	
+
 	private void demandeSectionCritique() throws RemoteException, InterruptedException {
 		this.sc = true;
 		if (this.owner != -1) {
@@ -49,7 +50,7 @@ public class PorteNaimiTrehel  extends Porte {
 			this.owner = -1;
 			// TODO c'est moche !
 			while(this.jeton == false) {
-				wait();
+				Thread.sleep(1000);
 			}
 		}
 	}
@@ -70,9 +71,6 @@ public class PorteNaimiTrehel  extends Porte {
 	
 	private void accepteJETON() {
 		this.jeton = true;
-		//SECTION CRITIQUE
-		
-		//
 		notifyAll();
 	}
 	
@@ -89,6 +87,16 @@ public class PorteNaimiTrehel  extends Porte {
 	public void demandeEntree() {
 		try {
 			demandeSectionCritique();
+			//ENTREE SECTION CRITIQUE
+			super.placeDisponible--;
+			
+			Set<Integer> allClients = super.reso.getClients();
+
+			for (Integer i : allClients) {
+				super.reso.sendMessage(super.id, i, new Message("ENTREE_DE_VOITURE"));
+			}
+			//FIN
+			sortieSectionCritique();
 		} catch (RemoteException e) {
 			System.out.println("[PORTE] error, RemoteException dans DemandeEntree()");
 			e.printStackTrace();
@@ -100,10 +108,15 @@ public class PorteNaimiTrehel  extends Porte {
 	
 	@Override
 	public void demandeSortie() {
+		super.placeDisponible++;
 		try {
-			sortieSectionCritique();
+			Set<Integer> allClients = super.reso.getClients();
+
+			for (Integer i : allClients) {
+				super.reso.sendMessage(super.id, i, new Message("SORTIE_DE_VOITURE"));
+			}
 		} catch (RemoteException e) {
-			System.out.println("[PORTE] error, RemoteException dans DemandeSortie()");
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -115,8 +128,12 @@ public class PorteNaimiTrehel  extends Porte {
 			accepteJETON();
 		} else if(((Message)msg).message == "REQ") {
 			accepteREQ(from, ((Message)msg).demandeur);
+		} else if(((Message)msg).message == "ENTREE_DE_VOITURE") {
+			super.placeDisponible--;
+		} else if(((Message)msg).message == "SORTIE_DE_VOITURE") {
+			super.placeDisponible++;
 		} else {
-			System.out.println("[PORTE] Error, unknown receive message.");
+			System.out.println("[PORTE] Error, unknown received message. \n"+msg.toString());
 		}
 	}
 }
