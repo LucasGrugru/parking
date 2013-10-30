@@ -8,10 +8,10 @@ public class Parking {
 	public int nbPlace;
 	public ArrayList<Porte> portes;
 	
-	public Parking(int nbPlace) {
+	public Parking(int nbPlace, int nbPorte) {
 		this.nbPlace = nbPlace;
 		portes = new ArrayList<Porte>();
-		for(int i=0; i<this.nbPlace; i++) {
+		for(int i=0; i<nbPorte; i++) {
 			try {
 				this.portes.add(new PorteNaimiTrehel(nbPlace));
 			} catch (Exception e) {

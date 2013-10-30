@@ -133,7 +133,7 @@ public class PorteNaimiTrehel  extends Porte {
 		} else if(((Message)msg).message == "SORTIE_DE_VOITURE") {
 			super.placeDisponible++;
 		} else {
-			System.out.println("[PORTE] Error, unknown received message. \n"+msg.toString());
+			System.out.println("[PORTE] Error, unknown received message. \n"+((Message)msg).message);
 		}
 	}
 }

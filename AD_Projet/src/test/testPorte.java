@@ -24,11 +24,12 @@ public class testPorte {
 	@Test
 	public void testCreation() throws RemoteException, NotBoundException{
 		r = new ResoImpl();
-		Registry registry = LocateRegistry.createRegistry(1099);
+		Registry registry = LocateRegistry.createRegistry(1097);
 		registry.rebind(Reso.NAME, r);
-		p = new Parking(10);
-		Assert.assertEquals(this.p.portes.size(), 10);
-		//this.p.demandeEntree(1);
+		p = new Parking(10, 3);
+		Assert.assertEquals(this.p.portes.size(), 3);
+		this.p.demandeEntree(1);
+		Assert.assertEquals(((PorteNaimiTrehel)this.p.portes.get(1)).placeDisponible, -1);
 		registry.unbind(Reso.NAME);;
 	}
 	
