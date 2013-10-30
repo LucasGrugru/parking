@@ -11,7 +11,8 @@ import reso.Client;
 import reso.Reso;
 
 public class Porte extends UnicastRemoteObject implements iPorte, Client {
-
+	private static final long serialVersionUID = 1L;
+	
 	protected Reso reso;
 	protected int id;
 	protected int placeDisponible;
