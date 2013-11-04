@@ -84,7 +84,7 @@ public class PorteNaimiTrehel  extends Porte {
 	}
 	
 	@Override
-	public void demandeEntree() {
+	public synchronized void demandeEntree() {
 		try {
 			demandeSectionCritique();
 			//ENTREE SECTION CRITIQUE
@@ -93,7 +93,8 @@ public class PorteNaimiTrehel  extends Porte {
 			Set<Integer> allClients = super.reso.getClients();
 
 			for (Integer i : allClients) {
-				super.reso.sendMessage(super.id, i, new Message("ENTREE_DE_VOITURE"));
+				if(i != super.id)
+					super.reso.sendMessage(super.id, i, new Message("ENTREE_DE_VOITURE"));
 			}
 			//FIN
 			sortieSectionCritique();
@@ -113,7 +114,8 @@ public class PorteNaimiTrehel  extends Porte {
 			Set<Integer> allClients = super.reso.getClients();
 
 			for (Integer i : allClients) {
-				super.reso.sendMessage(super.id, i, new Message("SORTIE_DE_VOITURE"));
+				if(i != super.id)
+					super.reso.sendMessage(super.id, i, new Message("SORTIE_DE_VOITURE"));
 			}
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
@@ -124,16 +126,16 @@ public class PorteNaimiTrehel  extends Porte {
 	@Override
 	public void receiveMessage(int from, int to, Serializable msg)
 			throws RemoteException {
-		if(((Message)msg).getMessage() == "JETON") {
+		if(((Message)msg).getMessage().equals("JETON")) {
 			accepteJETON();
-		} else if(((Message)msg).getMessage() == "REQ") {
+		} else if(((Message)msg).getMessage().equals("REQ")) {
 			accepteREQ(from, ((Message)msg).demandeur);
-		} else if(((Message)msg).getMessage() == "ENTREE_DE_VOITURE") {
+		} else if(((Message)msg).getMessage().equals("ENTREE_DE_VOITURE")) {
 			super.placeDisponible--;
-		} else if(((Message)msg).getMessage() == "SORTIE_DE_VOITURE") {
+		} else if(((Message)msg).getMessage().equals("SORTIE_DE_VOITURE")) {
 			super.placeDisponible++;
 		} else {
-			System.out.println("[PORTE] Error, unknown received message. \n"+((Message)msg).getMessage());
+			System.out.println("[PORTE] Error, unknown received message : "+((Message)msg).getMessage());
 		}
 	}
 }
