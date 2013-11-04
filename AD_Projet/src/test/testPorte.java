@@ -24,7 +24,7 @@ public class testPorte {
 	@Test
 	public void testCreation() throws RemoteException, NotBoundException{
 		r = new ResoImpl();
-		Registry registry = LocateRegistry.createRegistry(1097);
+		Registry registry = LocateRegistry.createRegistry(1099);
 		registry.rebind(Reso.NAME, r);
 		p = new Parking(10, 3);
 		Assert.assertEquals(this.p.portes.size(), 3);

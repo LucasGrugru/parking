@@ -124,16 +124,16 @@ public class PorteNaimiTrehel  extends Porte {
 	@Override
 	public void receiveMessage(int from, int to, Serializable msg)
 			throws RemoteException {
-		if(((Message)msg).message == "JETON") {
+		if(((Message)msg).getMessage() == "JETON") {
 			accepteJETON();
-		} else if(((Message)msg).message == "REQ") {
+		} else if(((Message)msg).getMessage() == "REQ") {
 			accepteREQ(from, ((Message)msg).demandeur);
-		} else if(((Message)msg).message == "ENTREE_DE_VOITURE") {
+		} else if(((Message)msg).getMessage() == "ENTREE_DE_VOITURE") {
 			super.placeDisponible--;
-		} else if(((Message)msg).message == "SORTIE_DE_VOITURE") {
+		} else if(((Message)msg).getMessage() == "SORTIE_DE_VOITURE") {
 			super.placeDisponible++;
 		} else {
-			System.out.println("[PORTE] Error, unknown received message. \n"+((Message)msg).message);
+			System.out.println("[PORTE] Error, unknown received message. \n"+((Message)msg).getMessage());
 		}
 	}
 }

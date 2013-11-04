@@ -15,4 +15,8 @@ public class Message implements Serializable {
 	public Message(String m) {
 		this.message = m;
 	}
+	
+	public String getMessage() {
+		return this.message;
+	}
 }
