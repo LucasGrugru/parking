@@ -5,6 +5,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.ArrayList;
+import java.util.Random;
 
 import org.junit.Assert;
 
@@ -43,33 +44,35 @@ public class Parking {
 		registry.rebind(Reso.NAME, r);
 		
 		Parking p = new Parking(10, 3);
-		Logger.log("Nombre de porte : "+p.portes.size());
-		Logger.log("Nombre de place : "+p.portes.get(0).placeDisponible);
-		Logger.log("Demande d'entrée sur la porte 1");
-		p.demandeEntree(0);
-		p.demandeEntree(0);
-		p.demandeEntree(1);
-		p.demandeEntree(0);
-		p.demandeEntree(2);
-		p.demandeEntree(0);
-		p.demandeEntree(0);
-		p.demandeEntree(0);
-		p.demandeEntree(0);
-		p.demandeSortie(1);
-		p.demandeEntree(0);
-		p.demandeSortie(1);
-		p.demandeEntree(0);
-		p.demandeSortie(0);
-		p.demandeSortie(0);
-		p.demandeSortie(0);
-		p.demandeSortie(0);
-		p.demandeEntree(0);
-		p.demandeEntree(0);
-		//Thread.sleep(5000);
+		Logger.log("[SERVEUR] Nombre de porte : "+p.portes.size());
+		Logger.log("[SERVEUR] Nombre de place : "+p.portes.get(0).placeDisponible);
+		Logger.log("[SERVEUR] Demande d'entrée sur la porte 1");
+		int nbEntree = 0;
+		int nbSortie = 0;
+		boolean entree;
+		for(int i=0; i<10; i++) {
+			Random random = new Random();
+			int numPorte = random.nextInt(2);
+			if(nbEntree == nbSortie) {
+				entree = true;
+			} else {
+				entree = random.nextBoolean();
+			}
+			if(entree) {
+				p.demandeEntree(numPorte);
+				nbEntree++;
+				Logger.log("[SERVEUR] Nombre de voiture entrée : "+nbEntree);
+			} else {
+				p.demandeSortie(numPorte);
+				nbSortie++;
+				Logger.log("[SERVEUR] Nombre de voiture sortie : "+nbSortie);
+			}
+		}
+		Thread.sleep(5000);
+		Logger.log("[SERVEUR] Nombre de place theoriquement restante "+(p.nbPlace - nbEntree + nbSortie));
+		Logger.log("[SERVEUR] Nombre de place restante sur la porte 0 : "+p.portes.get(0).placeDisponible);
+		Logger.log("[SERVEUR] Nombre de place restante sur la porte 1 : "+p.portes.get(1).placeDisponible);
+		Logger.log("[SERVEUR] Nombre de place restante sur la porte 2 : "+p.portes.get(2).placeDisponible);
 		
-		Logger.log("Nombre de place restante sur la porte 0 : "+p.portes.get(0).placeDisponible);
-		Logger.log("Nombre de place restante sur la porte 1 : "+p.portes.get(1).placeDisponible);
-		Logger.log("Nombre de place restante sur la porte 2 : "+p.portes.get(2).placeDisponible);
-		registry.unbind(Reso.NAME);
 	}
 }

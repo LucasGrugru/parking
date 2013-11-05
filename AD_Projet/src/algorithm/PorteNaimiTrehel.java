@@ -30,6 +30,8 @@ public class PorteNaimiTrehel  extends Porte {
 	 */
 	public boolean sc;
 	
+	public int compteur;
+	
 	public PorteNaimiTrehel(int place) throws RemoteException, MalformedURLException, NotBoundException {
 		super(place);
 		this.owner = 0;
@@ -49,7 +51,7 @@ public class PorteNaimiTrehel  extends Porte {
 			super.reso.sendMessage(super.id, this.owner, new Message("REQ", super.id));
 			this.owner = -1;
 			// TODO c'est moche !
-			while(this.jeton == true) {
+			while(this.jeton == false) {
 				wait();
 			}
 		}
@@ -62,7 +64,9 @@ public class PorteNaimiTrehel  extends Porte {
 			} else {
 				this.jeton = false;
 				super.reso.sendMessage(super.id, needer, new Message("JETON"));
-				notify();
+				synchronized(this) {
+					notify();
+				}
 			}
 		} else {
 			super.reso.sendMessage(super.id, this.owner, new Message("REQ", needer));
@@ -91,6 +95,7 @@ public class PorteNaimiTrehel  extends Porte {
 			Logger.log("[PORTE] Demande SC sur la porte "+super.id);
 			demandeSectionCritique();
 			//ENTREE SECTION CRITIQUE
+			
 			while(super.placeDisponible <= 0) {
 				Logger.log("[PORTE] Attente de place libre sur la porte "+super.id);
 				wait();
@@ -100,10 +105,17 @@ public class PorteNaimiTrehel  extends Porte {
 			
 			Set<Integer> allClients = super.reso.getClients();
 
+			compteur = 0;
+			
 			for (Integer i : allClients) {
 				if(i != super.id)
 					super.reso.sendMessage(super.id, i, new Message("ENTREE_DE_VOITURE"));
 			}
+			
+			while(compteur >= super.reso.getClients().size() - 1) {
+				wait();
+			}
+			
 			//FIN
 			Logger.log("[PORTE] Sortie SC sur la porte "+super.id);
 			sortieSectionCritique();
@@ -120,7 +132,9 @@ public class PorteNaimiTrehel  extends Porte {
 	public void demandeSortie() {
 		Logger.log("[PORTE] Sortie de voiture sur la porte "+super.id);
 		super.placeDisponible++;
-		notify();
+		synchronized(this) {
+			notify();
+		}
 		try {
 			Set<Integer> allClients = super.reso.getClients();
 
@@ -138,10 +152,13 @@ public class PorteNaimiTrehel  extends Porte {
 			throws RemoteException {
 		if(((Message)msg).getMessage().equals("JETON")) {
 			accepteJETON();
+		} else if(((Message)msg).getMessage().equals("ENTREE_DE_VOITURE_RECU")) {
+			compteur++;
 		} else if(((Message)msg).getMessage().equals("REQ")) {
-			accepteREQ(from, ((Message)msg).demandeur);
+			accepteREQ(from, ((Message)msg).getDemandeur());
 		} else if(((Message)msg).getMessage().equals("ENTREE_DE_VOITURE")) {
 			super.placeDisponible--;
+			super.reso.sendMessage(super.id, ((Message)msg).getDemandeur(), new Message("ENTREE_DE_VOITURE_RECU"));
 		} else if(((Message)msg).getMessage().equals("SORTIE_DE_VOITURE")) {
 			super.placeDisponible++;
 		} else {
