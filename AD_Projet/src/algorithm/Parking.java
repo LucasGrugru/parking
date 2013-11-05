@@ -39,14 +39,13 @@ public class Parking {
 	
 	public static void main(String[] args) throws RemoteException, NotBoundException, InterruptedException {
 		Reso r = new ResoImpl();
-		Logger l = new Logger();
 		Registry registry = LocateRegistry.getRegistry();
 		registry.rebind(Reso.NAME, r);
 		
 		Parking p = new Parking(10, 3);
-		l.log("Nombre de porte : "+p.portes.size());
-		l.log("Nombre de place : "+p.portes.get(0).placeDisponible);
-		l.log("Demande d'entrée sur la porte 1");
+		Logger.log("Nombre de porte : "+p.portes.size());
+		Logger.log("Nombre de place : "+p.portes.get(0).placeDisponible);
+		Logger.log("Demande d'entrée sur la porte 1");
 		p.demandeEntree(0);
 		p.demandeEntree(0);
 		p.demandeEntree(1);
@@ -56,21 +55,21 @@ public class Parking {
 		p.demandeEntree(0);
 		p.demandeEntree(0);
 		p.demandeEntree(0);
+		p.demandeSortie(1);
+		p.demandeEntree(0);
+		p.demandeSortie(1);
+		p.demandeEntree(0);
+		p.demandeSortie(0);
+		p.demandeSortie(0);
+		p.demandeSortie(0);
+		p.demandeSortie(0);
 		p.demandeEntree(0);
 		p.demandeEntree(0);
-		p.demandeEntree(0);
-		p.demandeEntree(0);
-		p.demandeEntree(0);
-		p.demandeEntree(1);
-		p.demandeEntree(1);
-		p.demandeEntree(0);
-		p.demandeEntree(2);
-		p.demandeEntree(2);
-		//p.demandeSortie(1);
 		//Thread.sleep(5000);
-		l.log("Nombre de place restante sur la porte 0 : "+p.portes.get(0).placeDisponible);
-		l.log("Nombre de place restante sur la porte 1 : "+p.portes.get(1).placeDisponible);
-		l.log("Nombre de place restante sur la porte 2 : "+p.portes.get(2).placeDisponible);
+		
+		Logger.log("Nombre de place restante sur la porte 0 : "+p.portes.get(0).placeDisponible);
+		Logger.log("Nombre de place restante sur la porte 1 : "+p.portes.get(1).placeDisponible);
+		Logger.log("Nombre de place restante sur la porte 2 : "+p.portes.get(2).placeDisponible);
 		registry.unbind(Reso.NAME);
 	}
 }

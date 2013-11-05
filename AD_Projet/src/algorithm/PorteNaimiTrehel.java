@@ -88,8 +88,14 @@ public class PorteNaimiTrehel  extends Porte {
 	@Override
 	public synchronized void demandeEntree() {
 		try {
+			Logger.log("[PORTE] Demande SC sur la porte "+super.id);
 			demandeSectionCritique();
 			//ENTREE SECTION CRITIQUE
+			while(super.placeDisponible <= 0) {
+				Logger.log("[PORTE] Attente de place libre sur la porte "+super.id);
+				wait();
+			}
+			Logger.log("[PORTE] Entrée de voiture sur la porte "+super.id);
 			super.placeDisponible--;
 			
 			Set<Integer> allClients = super.reso.getClients();
@@ -99,6 +105,7 @@ public class PorteNaimiTrehel  extends Porte {
 					super.reso.sendMessage(super.id, i, new Message("ENTREE_DE_VOITURE"));
 			}
 			//FIN
+			Logger.log("[PORTE] Sortie SC sur la porte "+super.id);
 			sortieSectionCritique();
 		} catch (RemoteException e) {
 			System.out.println("[PORTE] error, RemoteException dans DemandeEntree()");
@@ -111,7 +118,9 @@ public class PorteNaimiTrehel  extends Porte {
 	
 	@Override
 	public void demandeSortie() {
+		Logger.log("[PORTE] Sortie de voiture sur la porte "+super.id);
 		super.placeDisponible++;
+		notify();
 		try {
 			Set<Integer> allClients = super.reso.getClients();
 

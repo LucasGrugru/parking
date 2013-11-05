@@ -7,7 +7,7 @@ public class Logger {
 		
 	}
 	
-	public void log(String s) {
+	public static void log(String s) {
 		System.out.println(s);
 	}
 }
