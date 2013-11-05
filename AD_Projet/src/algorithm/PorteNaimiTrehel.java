@@ -43,14 +43,14 @@ public class PorteNaimiTrehel  extends Porte {
 		}
 	}
 
-	private void demandeSectionCritique() throws RemoteException, InterruptedException {
+	private synchronized void demandeSectionCritique() throws RemoteException, InterruptedException {
 		this.sc = true;
 		if (this.owner != -1) {
 			super.reso.sendMessage(super.id, this.owner, new Message("REQ", super.id));
 			this.owner = -1;
 			// TODO c'est moche !
-			while(this.jeton == false) {
-				Thread.sleep(1000);
+			while(this.jeton == true) {
+				wait();
 			}
 		}
 	}
@@ -62,6 +62,7 @@ public class PorteNaimiTrehel  extends Porte {
 			} else {
 				this.jeton = false;
 				super.reso.sendMessage(super.id, needer, new Message("JETON"));
+				notify();
 			}
 		} else {
 			super.reso.sendMessage(super.id, this.owner, new Message("REQ", needer));
@@ -69,15 +70,16 @@ public class PorteNaimiTrehel  extends Porte {
 		this.owner = needer;
 	}
 	
-	private void accepteJETON() {
+	private synchronized void accepteJETON() {
 		this.jeton = true;
-		notifyAll();
+		notify();
 	}
 	
 	private void sortieSectionCritique() throws RemoteException {
 		this.sc = false;
 		if(this.next != -1) {
 			super.reso.sendMessage(super.id, this.next, new Message("JETON"));
+			notify();
 			this.jeton = false;
 			this.next = -1;
 		}
@@ -118,7 +120,6 @@ public class PorteNaimiTrehel  extends Porte {
 					super.reso.sendMessage(super.id, i, new Message("SORTIE_DE_VOITURE"));
 			}
 		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
