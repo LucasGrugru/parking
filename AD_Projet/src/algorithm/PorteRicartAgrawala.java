@@ -120,7 +120,7 @@ public class PorteRicartAgrawala extends Porte {
 		System.out.println(Thread.currentThread().getId());
 		Message message = (Message) msg;
 		String messageText = message.getMessage();
-		MyLogger.debug("porte n"+this.id+": RECEPTION : "+messageText);
+		MyLogger.debug("Porte n"+this.id+": RECEPTION : "+messageText);
 		if( messageText.startsWith("REL-") ){
 			accepteREL( from );
 			synchronized (this) {
