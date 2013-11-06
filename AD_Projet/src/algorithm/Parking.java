@@ -44,9 +44,9 @@ public class Parking {
 		registry.rebind(Reso.NAME, r);
 		
 		Parking p = new Parking(10, 3);
-		Logger.log("[SERVEUR] Nombre de porte : "+p.portes.size());
-		Logger.log("[SERVEUR] Nombre de place : "+p.portes.get(0).placeDisponible);
-		Logger.log("[SERVEUR] Demande d'entrée sur la porte 1");
+		MyLogger.log("[SERVEUR] Nombre de porte : "+p.portes.size());
+		MyLogger.log("[SERVEUR] Nombre de place : "+p.portes.get(0).placeDisponible);
+		MyLogger.log("[SERVEUR] Demande d'entrée sur la porte 1");
 		int nbEntree = 0;
 		int nbSortie = 0;
 		boolean entree;
@@ -61,18 +61,18 @@ public class Parking {
 			if(entree) {
 				p.demandeEntree(numPorte);
 				nbEntree++;
-				Logger.log("[SERVEUR] Nombre de voiture entrée : "+nbEntree);
+				MyLogger.log("[SERVEUR] Nombre de voiture entrée : "+nbEntree);
 			} else {
 				p.demandeSortie(numPorte);
 				nbSortie++;
-				Logger.log("[SERVEUR] Nombre de voiture sortie : "+nbSortie);
+				MyLogger.log("[SERVEUR] Nombre de voiture sortie : "+nbSortie);
 			}
 		}
 		Thread.sleep(5000);
-		Logger.log("[SERVEUR] Nombre de place theoriquement restante "+(p.nbPlace - nbEntree + nbSortie));
-		Logger.log("[SERVEUR] Nombre de place restante sur la porte 0 : "+p.portes.get(0).placeDisponible);
-		Logger.log("[SERVEUR] Nombre de place restante sur la porte 1 : "+p.portes.get(1).placeDisponible);
-		Logger.log("[SERVEUR] Nombre de place restante sur la porte 2 : "+p.portes.get(2).placeDisponible);
+		MyLogger.log("[SERVEUR] Nombre de place theoriquement restante "+(p.nbPlace - nbEntree + nbSortie));
+		MyLogger.log("[SERVEUR] Nombre de place restante sur la porte 0 : "+p.portes.get(0).placeDisponible);
+		MyLogger.log("[SERVEUR] Nombre de place restante sur la porte 1 : "+p.portes.get(1).placeDisponible);
+		MyLogger.log("[SERVEUR] Nombre de place restante sur la porte 2 : "+p.portes.get(2).placeDisponible);
 		
 	}
 }
