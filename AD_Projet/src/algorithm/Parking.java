@@ -87,6 +87,59 @@ public class Parking extends UnicastRemoteObject implements IParking{
 	}
 
 	private void run(){
+		MyLogger.log("[SERVEUR] Nombre de porte : "+portes.size());
+		try {
+			MyLogger.log("[SERVEUR] Nombre de place : "+portes.get(0).getPlaceDisponible());
+		} catch (RemoteException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		MyLogger.log("[SERVEUR] Demande d'entrée sur la porte 1");
+		int nbEntree = 0;
+		int nbSortie = 0;
+		boolean entree;
+		for(int i=0; i<50; i++) {
+			Random random = new Random();
+			int numPorte = random.nextInt(2);
+			if(nbEntree == nbSortie) {
+				entree = true;
+			} else {
+				entree = random.nextBoolean();
+			}
+			if(entree) {
+				try {
+					demandeEntree(numPorte);
+				} catch (RemoteException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				nbEntree++;
+				MyLogger.log("[SERVEUR] Nombre de voiture entrée : "+nbEntree);
+			} else {
+				try {
+					demandeSortie(numPorte);
+				} catch (RemoteException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				nbSortie++;
+				MyLogger.log("[SERVEUR] Nombre de voiture sortie : "+nbSortie);
+			}
+		}
+		try {
+			Thread.sleep(5000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		MyLogger.log("[SERVEUR] Nombre de place theoriquement restante "+(nbPlace - nbEntree + nbSortie));
+		for( iPorte porte: portes ){
+			try {
+				MyLogger.log("[SERVEUR] Nombre de place restante sur la porte "+porte.getID()+" : "+porte.getPlaceDisponible());
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
+		}
 		
 	}
 	
