@@ -176,7 +176,7 @@ public class PorteRicartAgrawala extends Porte {
 	
 	public static void main(String[] args) {
 		try {
-			new PorteRicartAgrawala( Integer.valueOf( args[0]));
+			new PorteRicartAgrawala( Integer.valueOf( args[0]), Integer.valueOf( args[1]));
 		} catch (NumberFormatException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

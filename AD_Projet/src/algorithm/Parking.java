@@ -14,25 +14,14 @@ import reso.ResoImpl;
 public class Parking extends UnicastRemoteObject implements IParking{
 
 	private static final long serialVersionUID = 1L;
-	public int nbPlace;
-	public ArrayList<iPorte> portes;
+	private int nbPlace;
+	private ArrayList<iPorte> portes;
+	private int nbPorte;
 	
 	public Parking(int nbPlace, int nbPorte) throws RemoteException{
-		this(nbPlace);
-		for(int i=0; i<nbPorte; i++) {
-			try {
-				this.portes.add(new PorteRicartAgrawala(nbPlace, nbPorte));
-			} catch (Exception e) {
-				System.out.println("[PARKING] Error, can not create door");
-				e.printStackTrace();
-			}
-		}
-	}
-	
-	public Parking(int nbPlace) throws RemoteException{
 		this.nbPlace = nbPlace;
 		portes = new ArrayList<iPorte>();
-		System.out.println("[PARKING] "+nbPlace+" places");
+		this.nbPorte = nbPorte;
 	}
 	
 	public void demandeEntree(int idPorte) throws RemoteException {
@@ -84,9 +73,23 @@ public class Parking extends UnicastRemoteObject implements IParking{
 	@Override
 	public boolean declarePorte(iPorte porte) throws RemoteException {
 		System.out.println("P"+porte.getID()+" declare");
-		return portes.add( porte );
+		boolean ajout = portes.add( porte );
+		if( ajout ){
+			if( portes.size() == nbPorte ){
+				new Thread( new Runnable() {
+					public void run() {
+						Parking.this.run();
+					}
+				}).start();
+			}
+		}
+		return ajout;
 	}
 
+	private void run(){
+		
+	}
+	
 	@Override
 	public boolean undeclarePorte(iPorte porte) throws RemoteException {
 		return portes.remove(porte);
