@@ -165,6 +165,23 @@ public class PorteRicartAgrawala extends Porte {
 		}
 	}
 	
+	public static void main(String[] args) {
+		try {
+			PorteRicartAgrawala porte = new PorteRicartAgrawala( Integer.valueOf( args[0]));
+		} catch (NumberFormatException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NotBoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 	public void printDebug(String s){
 		MyLogger.debug("[P"+this.id+"] "+s);
 	}
