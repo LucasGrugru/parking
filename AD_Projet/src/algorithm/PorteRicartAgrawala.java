@@ -21,7 +21,7 @@ public class PorteRicartAgrawala extends Porte {
 	private Set<Integer> porteAttente;
 	private int reponsesAttendues;
 	
-	protected PorteRicartAgrawala(int place) throws RemoteException, MalformedURLException, NotBoundException {
+	public PorteRicartAgrawala(int place) throws RemoteException, MalformedURLException, NotBoundException {
 		super(place);
 		portes = new HashSet<Integer>();
 		isEntree = false;
@@ -31,7 +31,7 @@ public class PorteRicartAgrawala extends Porte {
 		reponsesAttendues = 0;
 	}
 
-	protected PorteRicartAgrawala(int place, int nombreVoisin) throws RemoteException, MalformedURLException, NotBoundException {
+	public PorteRicartAgrawala(int place, int nombreVoisin) throws RemoteException, MalformedURLException, NotBoundException {
 		this(place);
 		for( int i = 0; i < nombreVoisin; i++ ){
 			if( i != this.id ){
@@ -167,7 +167,7 @@ public class PorteRicartAgrawala extends Porte {
 	
 	public static void main(String[] args) {
 		try {
-			PorteRicartAgrawala porte = new PorteRicartAgrawala( Integer.valueOf( args[0]));
+			new PorteRicartAgrawala( Integer.valueOf( args[0]));
 		} catch (NumberFormatException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
