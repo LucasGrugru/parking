@@ -20,8 +20,7 @@ public class MyLogger {
 			fh = new FileHandler("./out.log");
 			System.out.println("Emplacement du log: "+new File("./out.log").getAbsolutePath());
 	        logger.addHandler(fh);
-	        SimpleFormatter formatter = new SimpleFormatter();  
-	        fh.setFormatter(formatter); 
+	        fh.setFormatter(new MyFormatter()); 
 		} catch (SecurityException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -37,6 +36,6 @@ public class MyLogger {
      
      public static void debug( String s ){
     	 createLogger();
-    	 logger.info("[D] "+s);
+    	 logger.info(s);
      }
 }
