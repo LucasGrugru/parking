@@ -15,22 +15,18 @@ public class PorteRicartAgrawala extends Porte {
 
 	private static final long serialVersionUID = 1L;
 	private Set<Integer> portes;
-	private int nbPlace;
 	private boolean isEntree;
 	private int horloge;
 	private int lastHorloge;
-	private int lastPorte;
 	private Set<Integer> porteAttente;
 	private int reponsesAttendues;
 	
 	protected PorteRicartAgrawala(int place) throws RemoteException, MalformedURLException, NotBoundException {
 		super(place);
 		portes = new HashSet<Integer>();
-		nbPlace = place;
 		isEntree = false;
 		horloge = 0;
 		lastHorloge = 0;
-		lastPorte = -1;
 		porteAttente = new HashSet<Integer>();
 		reponsesAttendues = 0;
 	}
@@ -43,15 +39,18 @@ public class PorteRicartAgrawala extends Porte {
 			}
 		}
 	}
+
 	@Override
 	public void demandeEntree() {
+		printDebug("Recoit voiture");
 		this.horloge++;
-		if( nbPlace == 0 ) return;
+		if( placeDisponible == 0 ) return;
 		isEntree = true;
 		lastHorloge = this.horloge;
 		reponsesAttendues = portes.size();
 		for( Integer porte: portes ){
 			try {
+				printDebug("demande authorisation entree a "+porte);
 				reso.sendMessage(this.id, porte, new Message(MESSAGE_ENTREE+"|"+this.horloge, this.id));
 			} catch (RemoteException e) {
 				e.printStackTrace();
@@ -67,54 +66,61 @@ public class PorteRicartAgrawala extends Porte {
 				}
 			}
 		}
-		
+		printDebug("Toute les reponses ok");
 		isEntree = false;
 		
 		for( Integer porte: porteAttente ){
-			if( nbPlace > 0 )
-				nbPlace--;
+			if( placeDisponible > 0 )
+				placeDisponible--;
 			try {
+				printDebug("Retourne l'accord a "+porte);
 				reso.sendMessage(this.id, porte, new Message(MESSAGE_ACCORD, this.id));
 			} catch (RemoteException e) {
 				e.printStackTrace();
 			}
 		}
 		porteAttente.clear();
-		if( nbPlace == 0 )
-			return;
-		else
-			nbPlace--;
+		if( placeDisponible > 0){
+			placeDisponible--;
+			printDebug("diminue le nombre de place. now "+placeDisponible);
+		}
 	}
 	
 	@Override
 	public void demandeSortie() {
+		printDebug("Voiture sort now "+placeDisponible);
 		for( Integer porte: portes ){
 			try {
+				printDebug("previent "+porte+" qu'une voiture est sortit");
 				reso.sendMessage(this.id, porte, new Message(MESSAGE_SORTIE,this.id));
 			} catch (RemoteException e) {
 				e.printStackTrace();
 			}
 		}
+		placeDisponible++;
 	}
 	
 	public void getENTREE( int horloge, int porte){
 		this.horloge = 1 + (this.horloge > horloge?this.horloge:horloge);
 		if( isEntree ){
 			if( ( horloge < lastHorloge ) || (( lastHorloge == horloge) && (porte < this.id))){
-				if( nbPlace > 0 )
-					nbPlace--;
+				if( placeDisponible > 0 )
+					placeDisponible--;
 				try {
+					printDebug("envoi accord a "+porte);
 					reso.sendMessage(this.id, porte, new Message(MESSAGE_ACCORD, this.id));
 				} catch (RemoteException e) {
 					e.printStackTrace();
 				}
 			}else{
+				printDebug("Met en attente "+porte);
 				porteAttente.add( porte );
 			}
 		}else{
-			if( nbPlace > 0 )
-				nbPlace--;
+			if( placeDisponible > 0 )
+				placeDisponible--;
 			try {
+				printDebug("Envoi accord a "+porte);
 				reso.sendMessage(this.id, porte, new Message(MESSAGE_ACCORD, this.id));
 			} catch (RemoteException e) {
 				e.printStackTrace();
@@ -124,15 +130,17 @@ public class PorteRicartAgrawala extends Porte {
 	
 	public void getAccept(){
 		reponsesAttendues--;
+		printDebug("reponse encore attendu "+reponsesAttendues);
 		if( reponsesAttendues == 0 ){
 			synchronized (this) {
-				notifyAll();
+				notify();
 			}
 		}
 	}
 	
 	public void getSortie(){
-		nbPlace++;
+		placeDisponible++;
+		printDebug("Place disponible "+placeDisponible);
 	}
 	
 	@Override
@@ -142,14 +150,14 @@ public class PorteRicartAgrawala extends Porte {
 		Message message = (Message) msg;
 		String messageText = message.getMessage();
 		if( messageText.equals(MESSAGE_ACCORD) ){
-			printDebug("Recoit un message d'accord");
+			printDebug("Recoit un message d'accord de "+from);
 			getAccept();
 		}else if( messageText.equals(MESSAGE_SORTIE)){
-			printDebug("Recoit un message de sortie");
+			printDebug("Recoit un message de sortie de "+from);
 			getSortie();
 		}else if( messageText.startsWith(MESSAGE_ENTREE)){
-			int horloge = Integer.valueOf( messageText.substring(6));
-			printDebug("Recoit un message d'entree: de "+from+" avec l'horloge: "+horloge);
+			int horloge = Integer.valueOf( messageText.substring(7));
+			printDebug("Recoit un message d'entree: de "+from);
 			getENTREE(horloge, from);
 		}
 		}catch( Exception e ){
@@ -158,6 +166,6 @@ public class PorteRicartAgrawala extends Porte {
 	}
 	
 	public void printDebug(String s){
-		MyLogger.debug("Porte n°"+this.id+": "+s);
+		MyLogger.debug("[P"+this.id+"] "+s);
 	}
 }
