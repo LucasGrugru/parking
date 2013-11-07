@@ -83,6 +83,7 @@ public class Parking extends UnicastRemoteObject implements IParking{
 
 	@Override
 	public boolean declarePorte(Porte porte) throws RemoteException {
+		System.out.println("declaration d'une porte");
 		return portes.add( porte );
 	}
 
