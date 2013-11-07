@@ -72,7 +72,7 @@ public class Parking extends UnicastRemoteObject implements IParking{
 	}
 
 	@Override
-	public boolean declarePorte(iPorte porte) throws RemoteException {
+	public CaracParking declarePorte(iPorte porte) throws RemoteException {
 		System.out.println("P"+porte.getID()+" declare");
 		boolean ajout = portes.add( porte );
 		if( ajout ){
@@ -84,7 +84,7 @@ public class Parking extends UnicastRemoteObject implements IParking{
 				}).start();
 			}
 		}
-		return ajout;
+		return new CaracParking(nbPlace, nbPorte);
 	}
 
 	private void run(){
@@ -147,5 +147,9 @@ public class Parking extends UnicastRemoteObject implements IParking{
 	@Override
 	public boolean undeclarePorte(iPorte porte) throws RemoteException {
 		return portes.remove(porte);
+	}
+
+	public  CaracParking getCarac() throws RemoteException{
+		return new CaracParking(nbPlace, nbPorte);
 	}
 }

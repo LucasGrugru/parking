@@ -24,32 +24,22 @@ public class PorteRicartAgrawala extends Porte {
 	private Set<Integer> porteAttente;
 	private int reponsesAttendues;
 	
-	public PorteRicartAgrawala(int place) throws RemoteException, MalformedURLException, NotBoundException {
-		super(place);
+	public PorteRicartAgrawala(int nbPlace, int nbPorte) throws RemoteException, MalformedURLException, NotBoundException {
+		super(nbPlace);
 		portes = new HashSet<Integer>();
 		isEntree = false;
 		horloge = 0;
 		lastHorloge = 0;
 		porteAttente = new HashSet<Integer>();
 		reponsesAttendues = 0;
-
-		try{
-		MyLogger.debug("Porte tente de se declarer au parking");
-		IParking p = (IParking)Naming.lookup(IParking.NAME);
-		p.declarePorte( this );
-		}catch( Exception e){
-			e.printStackTrace();
-		}
-	}
-
-	public PorteRicartAgrawala(int place, int nombreVoisin) throws RemoteException, MalformedURLException, NotBoundException {
-		this(place);
-		for( int i = 0; i < nombreVoisin; i++ ){
+		for( int i =0; i < nbPorte; i++ ){
 			if( i != this.id ){
 				portes.add( i );
 			}
 		}
+		
 	}
+
 
 	@Override
 	public void demandeEntree() {

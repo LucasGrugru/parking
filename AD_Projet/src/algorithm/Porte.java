@@ -7,6 +7,7 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
+import logger.MyLogger;
 import reso.Client;
 import reso.Reso;
 
@@ -16,12 +17,13 @@ public class Porte extends UnicastRemoteObject implements iPorte, Client {
 	protected Reso reso;
 	protected int id;
 	public int placeDisponible;
-	protected final int placeTotal;
+	protected int placeTotal;
 	
-	public Porte(int place) throws RemoteException, MalformedURLException, NotBoundException {
+	public Porte( int nbPlace ) throws RemoteException, MalformedURLException, NotBoundException {
 		super();
-		this.placeDisponible = place;
-		this.placeTotal = place;
+
+		this.placeTotal = nbPlace;
+		this.placeDisponible = this.placeTotal;
 		this.reso = (Reso)Naming.lookup(Reso.NAME);
 		this.id = this.reso.declareClient(this);
 	}
@@ -55,4 +57,23 @@ public class Porte extends UnicastRemoteObject implements iPorte, Client {
 		return id;
 	}
 
+	public void launchPorte( ParkingAlgo algorithm){
+		try {
+			CaracParking cara = ((IParking) Naming.lookup(IParking.NAME)).getCarac();
+
+			switch( algorithm ){
+			case ABCAST:
+				new PorteABCAST(cara.getNbPlace());
+				break;
+			case NAIMI_TREHEL:
+				new PorteNaimiTrehel(cara.getNbPlace());
+				break;
+			case RICART_AGRAWALA:
+				new PorteRicartAgrawala(cara.getNbPlace(), cara.getNbPorte());
+				break;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 }

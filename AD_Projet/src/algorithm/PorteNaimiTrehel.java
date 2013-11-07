@@ -34,8 +34,8 @@ public class PorteNaimiTrehel  extends Porte {
 	
 	public int compteur;
 	
-	public PorteNaimiTrehel(int place) throws RemoteException, MalformedURLException, NotBoundException {
-		super(place);
+	public PorteNaimiTrehel( int nbPlace ) throws RemoteException, MalformedURLException, NotBoundException {
+		super(nbPlace);
 		this.owner = 0;
 		this.sc = false;
 		this.jeton = false;
