@@ -1,7 +1,8 @@
 package algorithm;
 
-public class MessageABCAST extends Message implements Comparable {
+public class MessageABCAST extends Message implements Comparable<MessageABCAST> {
 
+	private static final long serialVersionUID = 1L;
 	private int estampille;
 	
 
@@ -15,9 +16,9 @@ public class MessageABCAST extends Message implements Comparable {
 	}
 
 	@Override
-	public int compareTo(Object o) {
-		if(((MessageABCAST)o).estampille > this.estampille) return -1;
-		if(((MessageABCAST)o).estampille < this.estampille) return 1;
+	public int compareTo(MessageABCAST m) {
+		if(m.estampille > this.estampille) return -1;
+		if(m.estampille < this.estampille) return 1;
 		return 0;
 	}
 

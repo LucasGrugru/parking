@@ -15,6 +15,8 @@ import logger.MyLogger;
  */
 public class PorteABCAST extends Porte {
 	
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * Estampille local de la porte
 	 */

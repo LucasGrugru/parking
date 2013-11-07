@@ -10,6 +10,8 @@ import logger.MyLogger;
 
 public class PorteNaimiTrehel  extends Porte {
 	
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * Identifiant supposé du processus possédant le jeton
 	 * -1 pour nil
@@ -52,7 +54,7 @@ public class PorteNaimiTrehel  extends Porte {
 		if (this.owner != -1) {
 			super.reso.sendMessage(super.id, this.owner, new Message("REQ", super.id));
 			this.owner = -1;
-			// TODO c'est moche !
+			// TODO c'est moche ! c'est toi le moche
 			while(this.jeton == false) {
 				wait();
 			}
