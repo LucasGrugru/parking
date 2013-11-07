@@ -2,6 +2,7 @@ package algorithm;
 
 import java.io.Serializable;
 import java.net.MalformedURLException;
+import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.HashSet;
@@ -29,6 +30,14 @@ public class PorteRicartAgrawala extends Porte {
 		lastHorloge = 0;
 		porteAttente = new HashSet<Integer>();
 		reponsesAttendues = 0;
+
+		try{
+		MyLogger.debug("Porte tente de se declarer au parking");
+		IParking p = (IParking)Naming.lookup(IParking.NAME);
+		p.declarePorte( this );
+		}catch( Exception e){
+			e.printStackTrace();
+		}
 	}
 
 	public PorteRicartAgrawala(int place, int nombreVoisin) throws RemoteException, MalformedURLException, NotBoundException {

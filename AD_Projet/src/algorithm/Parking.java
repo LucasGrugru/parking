@@ -15,7 +15,7 @@ public class Parking extends UnicastRemoteObject implements IParking{
 
 	private static final long serialVersionUID = 1L;
 	public int nbPlace;
-	public ArrayList<Porte> portes;
+	public ArrayList<iPorte> portes;
 	
 	public Parking(int nbPlace, int nbPorte) throws RemoteException{
 		this(nbPlace);
@@ -31,7 +31,7 @@ public class Parking extends UnicastRemoteObject implements IParking{
 	
 	public Parking(int nbPlace) throws RemoteException{
 		this.nbPlace = nbPlace;
-		portes = new ArrayList<Porte>();
+		portes = new ArrayList<iPorte>();
 		System.out.println("[PARKING] "+nbPlace+" places");
 	}
 	
@@ -50,7 +50,7 @@ public class Parking extends UnicastRemoteObject implements IParking{
 		
 		Parking p = new Parking(10, 3);
 		MyLogger.log("[SERVEUR] Nombre de porte : "+p.portes.size());
-		MyLogger.log("[SERVEUR] Nombre de place : "+p.portes.get(0).placeDisponible);
+		MyLogger.log("[SERVEUR] Nombre de place : "+p.portes.get(0).getPlaceDisponible());
 		MyLogger.log("[SERVEUR] Demande d'entrée sur la porte 1");
 		int nbEntree = 0;
 		int nbSortie = 0;
@@ -75,20 +75,20 @@ public class Parking extends UnicastRemoteObject implements IParking{
 		}
 		Thread.sleep(5000);
 		MyLogger.log("[SERVEUR] Nombre de place theoriquement restante "+(p.nbPlace - nbEntree + nbSortie));
-		MyLogger.log("[SERVEUR] Nombre de place restante sur la porte 0 : "+p.portes.get(0).placeDisponible);
-		MyLogger.log("[SERVEUR] Nombre de place restante sur la porte 1 : "+p.portes.get(1).placeDisponible);
-		MyLogger.log("[SERVEUR] Nombre de place restante sur la porte 2 : "+p.portes.get(2).placeDisponible);
+		MyLogger.log("[SERVEUR] Nombre de place restante sur la porte 0 : "+p.portes.get(0).getPlaceDisponible());
+		MyLogger.log("[SERVEUR] Nombre de place restante sur la porte 1 : "+p.portes.get(1).getPlaceDisponible());
+		MyLogger.log("[SERVEUR] Nombre de place restante sur la porte 2 : "+p.portes.get(2).getPlaceDisponible());
 		
 	}
 
 	@Override
-	public boolean declarePorte(Porte porte) throws RemoteException {
-		System.out.println("declaration d'une porte");
+	public boolean declarePorte(iPorte porte) throws RemoteException {
+		System.out.println("P"+porte.getID()+" declare");
 		return portes.add( porte );
 	}
 
 	@Override
-	public boolean undeclarePorte(Porte porte) throws RemoteException {
+	public boolean undeclarePorte(iPorte porte) throws RemoteException {
 		return portes.remove(porte);
 	}
 }
