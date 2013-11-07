@@ -18,7 +18,8 @@ public class Launcher {
 			registry.rebind(Reso.NAME, reso);
 			if( args != null && args.length != 0 )
 				nbPlace = Integer.valueOf(args[0]);
-			registry.rebind(IParking.NAME, new Parking(nbPlace));
+			Parking p = new Parking(nbPlace);
+			registry.rebind(IParking.NAME, p);
 			
 			System.out.println("Reso successfully launched!");
 		} catch (Exception ex) {
