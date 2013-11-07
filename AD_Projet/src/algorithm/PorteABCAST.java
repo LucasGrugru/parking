@@ -7,6 +7,8 @@ import java.rmi.RemoteException;
 import java.util.Set;
 import java.util.TreeSet;
 
+import logger.MyLogger;
+
 /**
  * Porte utilisant les horloges logiques pour l'acces en section critique
  * @author lucas & matin

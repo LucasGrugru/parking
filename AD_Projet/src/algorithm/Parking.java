@@ -8,6 +8,7 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.Random;
 
+import logger.MyLogger;
 import reso.Reso;
 import reso.ResoImpl;
 
@@ -44,7 +45,7 @@ public class Parking extends UnicastRemoteObject implements IParking{
 		int nbEntree = 0;
 		int nbSortie = 0;
 		boolean entree;
-		for(int i=0; i<50; i++) {
+		for(int i=0; i<10; i++) {
 			Random random = new Random();
 			int numPorte = random.nextInt(2);
 			if(nbEntree == nbSortie) {
@@ -98,7 +99,7 @@ public class Parking extends UnicastRemoteObject implements IParking{
 		int nbEntree = 0;
 		int nbSortie = 0;
 		boolean entree;
-		for(int i=0; i<50; i++) {
+		for(int i=0; i<10; i++) {
 			Random random = new Random();
 			int numPorte = random.nextInt(2);
 			if(nbEntree == nbSortie) {

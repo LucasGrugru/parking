@@ -6,6 +6,8 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.Set;
 
+import logger.MyLogger;
+
 public class PorteNaimiTrehel  extends Porte {
 	
 	/**

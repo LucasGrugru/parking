@@ -8,6 +8,8 @@ import java.rmi.RemoteException;
 import java.util.HashSet;
 import java.util.Set;
 
+import logger.MyLogger;
+
 public class PorteRicartAgrawala extends Porte {
 
 	private static final String MESSAGE_ENTREE = "ENTREE";
