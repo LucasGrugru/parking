@@ -124,6 +124,11 @@ public class PorteRicartAgrawala extends Porte {
 	
 	public void getAccept(){
 		reponsesAttendues--;
+		if( reponsesAttendues == 0 ){
+			synchronized (this) {
+				notifyAll();
+			}
+		}
 	}
 	
 	public void getSortie(){
@@ -133,19 +138,26 @@ public class PorteRicartAgrawala extends Porte {
 	@Override
 	public void receiveMessage(int from, int to, Serializable msg)
 			throws RemoteException {
+		try{
 		Message message = (Message) msg;
 		String messageText = message.getMessage();
 		if( messageText.equals(MESSAGE_ACCORD) ){
+			printDebug("Recoit un message d'accord");
 			getAccept();
 		}else if( messageText.equals(MESSAGE_SORTIE)){
+			printDebug("Recoit un message de sortie");
 			getSortie();
 		}else if( messageText.startsWith(MESSAGE_ENTREE)){
 			int horloge = Integer.valueOf( messageText.substring(6));
+			printDebug("Recoit un message d'entree: de "+from+" avec l'horloge: "+horloge);
 			getENTREE(horloge, from);
+		}
+		}catch( Exception e ){
+			e.printStackTrace();
 		}
 	}
 	
 	public void printDebug(String s){
-		MyLogger.debug("Porte nÂ°"+this.id+" "+s);
+		MyLogger.debug("Porte n°"+this.id+": "+s);
 	}
 }
