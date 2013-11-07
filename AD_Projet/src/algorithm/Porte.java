@@ -24,7 +24,8 @@ public class Porte extends UnicastRemoteObject implements iPorte, Client {
 		this.placeTotal = place;
 		this.reso = (Reso)Naming.lookup(Reso.NAME);
 		this.id = this.reso.declareClient(this);
-		((Parking)Naming.lookup(IParking.NAME)).declarePorte( this );
+		IParking p = (IParking)Naming.lookup(IParking.NAME);
+		p.declarePorte( this );
 	}
 
 	@Override
