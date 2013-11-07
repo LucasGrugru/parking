@@ -9,126 +9,139 @@ import java.util.Set;
 
 public class PorteRicartAgrawala extends Porte {
 
+	private static final String MESSAGE_ENTREE = "ENTREE";
+	private static final String MESSAGE_SORTIE = "SORTIE";
+	private static final String MESSAGE_ACCORD = "ACK";
+
 	private static final long serialVersionUID = 1L;
-	private int hsc;
-	private int h;
-	private boolean r;
-	private Set<Integer> x;
-	private int nrel;
-	private Set<Integer> v;
+	private Set<Integer> portes;
+	private int nbPlace;
+	private boolean isEntree;
+	private int horloge;
+	private int lastHorloge;
+	private int lastPorte;
+	private Set<Integer> porteAttente;
+	private int reponsesAttendues;
 	
 	protected PorteRicartAgrawala(int place) throws RemoteException, MalformedURLException, NotBoundException {
 		super(place);
-		this.hsc = 0;
-		this.h = 0;
-		this.r = false;
-		this.x = new HashSet<Integer>();
-		this.nrel = 0;
-		this.v = new HashSet<Integer>();
+		portes = new HashSet<Integer>();
+		nbPlace = place;
+		isEntree = false;
+		horloge = 0;
+		lastHorloge = 0;
+		lastPorte = -1;
+		porteAttente = new HashSet<Integer>();
+		reponsesAttendues = 0;
 	}
 
 	protected PorteRicartAgrawala(int place, int nombreVoisin) throws RemoteException, MalformedURLException, NotBoundException {
 		this(place);
 		for( int i = 0; i < nombreVoisin; i++ ){
 			if( i != this.id ){
-				this.v.add( i );
+				portes.add( i );
 			}
 		}
 	}
 	@Override
 	public void demandeEntree() {
-		printDebug("demande d'entree");
-		accepteSC(true);
-	}
-	
-	@Override
-	public void demandeSortie() {
-		printDebug("demande de sortie");
-		accepteSC(false);
-	}
-	
-	public void accepteSC( boolean isEntree){
-		this.r = true;
-		this.hsc = this.h + 1;
-		this.nrel = this.v.size();
-		for( Integer voisin: this.v){
+		this.horloge++;
+		if( nbPlace == 0 ) return;
+		isEntree = true;
+		lastHorloge = this.horloge;
+		reponsesAttendues = portes.size();
+		for( Integer porte: portes ){
 			try {
-				printDebug("envoi : "+"REQ-"+this.hsc);
-				this.reso.sendMessage(this.id, voisin, new Message("REQ-"+this.hsc,this.id));
+				reso.sendMessage(this.id, porte, new Message(MESSAGE_ENTREE+"|"+this.horloge, this.id));
 			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
-		System.out.println(Thread.currentThread().getId());
-		while( this.nrel != 0 ){
-			System.out.println("NREL: "+this.nrel);
+		
+		while( reponsesAttendues != 0 ){
 			synchronized (this) {
 				try {
-					this.wait();
+					wait();
 				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
 		}
-		//ACCES SECTION CRITIQUE
-		System.out.println("ZONE CRITIQUE");
+		
+		isEntree = false;
+		
+		for( Integer porte: porteAttente ){
+			if( nbPlace > 0 )
+				nbPlace--;
+			try {
+				reso.sendMessage(this.id, porte, new Message(MESSAGE_ACCORD, this.id));
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
+		}
+		porteAttente.clear();
+		if( nbPlace == 0 )
+			return;
+		else
+			nbPlace--;
+	}
+	
+	@Override
+	public void demandeSortie() {
+		for( Integer porte: portes ){
+			try {
+				reso.sendMessage(this.id, porte, new Message(MESSAGE_SORTIE,this.id));
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	public void getENTREE( int horloge, int porte){
+		this.horloge = 1 + (this.horloge > horloge?this.horloge:horloge);
 		if( isEntree ){
-			
-		}else{
-			
-		}
-	}
-	
-	public void accepteREQ( int vh, int demandeur){
-		this.h = 1 + (this.hsc>vh?this.hsc:vh);
-		if( this.r && ((this.hsc < vh) || (this.hsc == vh) && this.id < demandeur)){
-			synchronized (this.x) {
-				this.x.add( demandeur );
+			if( ( horloge < lastHorloge ) || (( lastHorloge == horloge) && (porte < this.id))){
+				if( nbPlace > 0 )
+					nbPlace--;
+				try {
+					reso.sendMessage(this.id, porte, new Message(MESSAGE_ACCORD, this.id));
+				} catch (RemoteException e) {
+					e.printStackTrace();
+				}
+			}else{
+				porteAttente.add( porte );
 			}
 		}else{
+			if( nbPlace > 0 )
+				nbPlace--;
 			try {
-				printDebug("envoi : "+"REL-");
-				this.reso.sendMessage(this.id, demandeur, new Message("REL-", this.id));
+				reso.sendMessage(this.id, porte, new Message(MESSAGE_ACCORD, this.id));
 			} catch (RemoteException e) {
 				e.printStackTrace();
 			}
 		}
 	}
 	
-	public void accepteREL( int demandeur){
-		this.nrel--;
+	public void getAccept(){
+		reponsesAttendues--;
 	}
 	
-	public void liberationSC(){
-		this.r = false;
-		for( Integer i: this.x ){
-			try {
-				printDebug("envoi : "+"REL-");
-				this.reso.sendMessage(this.id, i, new Message("REL-", this.id));
-			} catch (RemoteException e) {
-				e.printStackTrace();
-			}
-		}
-		this.x.clear();
+	public void getSortie(){
+		nbPlace++;
 	}
 	
 	@Override
 	public void receiveMessage(int from, int to, Serializable msg)
 			throws RemoteException {
-		System.out.println(Thread.currentThread().getId());
 		Message message = (Message) msg;
 		String messageText = message.getMessage();
-		MyLogger.debug("Porte n"+this.id+": RECEPTION : "+messageText);
-		if( messageText.startsWith("REL-") ){
-			accepteREL( from );
-			synchronized (this) {
-				notifyAll();				
-			}
-		}else if (messageText.startsWith("REQ-")){
-			int hdemandeur = Integer.valueOf( messageText.substring(4));
-			accepteREQ(hdemandeur, from);
+		if( messageText.equals(MESSAGE_ACCORD) ){
+			getAccept();
+		}else if( messageText.equals(MESSAGE_SORTIE)){
+			getSortie();
+		}else if( messageText.startsWith(MESSAGE_ENTREE)){
+			int horloge = Integer.valueOf( messageText.substring(6));
+			getENTREE(horloge, from);
 		}
 	}
 	
