@@ -1,5 +1,6 @@
 package algorithm;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
@@ -16,7 +17,8 @@ public class MyLogger {
 		logger.setUseParentHandlers(false);
 	    FileHandler fh;
         try {
-			fh = new FileHandler("/afs/deptinfo-st.univ-fcomte.fr/users/aginhoux/git/parking/AD_Projet/out.txt");
+			fh = new FileHandler("./out.log");
+			System.out.println("Emplacement du log: "+new File("./out.log").getAbsolutePath());
 	        logger.addHandler(fh);
 	        SimpleFormatter formatter = new SimpleFormatter();  
 	        fh.setFormatter(formatter); 
