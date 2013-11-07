@@ -57,20 +57,25 @@ public class Porte extends UnicastRemoteObject implements iPorte, Client {
 		return id;
 	}
 
-	public void launchPorte( ParkingAlgo algorithm){
+	public static void launchPorte( ParkingAlgo algorithm, int nbPorte){
+		if( nbPorte < 0 ){
+			nbPorte = 0 - nbPorte;
+		}
 		try {
-			CaracParking cara = ((IParking) Naming.lookup(IParking.NAME)).getCarac();
-
-			switch( algorithm ){
-			case ABCAST:
-				new PorteABCAST(cara.getNbPlace());
-				break;
-			case NAIMI_TREHEL:
-				new PorteNaimiTrehel(cara.getNbPlace());
-				break;
-			case RICART_AGRAWALA:
-				new PorteRicartAgrawala(cara.getNbPlace(), cara.getNbPorte());
-				break;
+			for( int i = 0; i < nbPorte; i++ ){
+				CaracParking cara = ((IParking) Naming.lookup(IParking.NAME)).getCarac();
+	
+				switch( algorithm ){
+				case ABCAST:
+					new PorteABCAST(cara.getNbPlace());
+					break;
+				case NAIMI_TREHEL:
+					new PorteNaimiTrehel(cara.getNbPlace());
+					break;
+				case RICART_AGRAWALA:
+					new PorteRicartAgrawala(cara.getNbPlace(), cara.getNbPorte());
+					break;
+				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
