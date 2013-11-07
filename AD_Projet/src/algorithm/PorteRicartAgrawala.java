@@ -2,7 +2,6 @@ package algorithm;
 
 import java.io.Serializable;
 import java.net.MalformedURLException;
-import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.HashSet;
