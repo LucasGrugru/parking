@@ -23,8 +23,8 @@ public class PorteRicartAgrawala extends Porte {
 	private Set<Integer> porteAttente;
 	private int reponsesAttendues;
 	
-	public PorteRicartAgrawala(int nbPlace, int nbPorte) throws RemoteException, MalformedURLException, NotBoundException {
-		super(nbPlace);
+	public PorteRicartAgrawala(int nbPlace, int nbPorte, String hostname) throws RemoteException, MalformedURLException, NotBoundException {
+		super(nbPlace, hostname);
 		portes = new HashSet<Integer>();
 		isEntree = false;
 		horloge = 0;
@@ -167,7 +167,7 @@ public class PorteRicartAgrawala extends Porte {
 	
 	public static void main(String[] args) {
 		try {
-			new PorteRicartAgrawala( Integer.valueOf( args[0]), Integer.valueOf( args[1]));
+			new PorteRicartAgrawala( Integer.valueOf( args[0]), Integer.valueOf( args[1]), "192.168.1.9");
 		} catch (NumberFormatException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

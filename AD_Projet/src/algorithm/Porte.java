@@ -21,7 +21,7 @@ public class Porte extends UnicastRemoteObject implements iPorte, Client {
 	public int placeDisponible;
 	protected int placeTotal;
 	
-	public Porte( int nbPlace ) throws RemoteException, MalformedURLException, NotBoundException {
+	public Porte( int nbPlace, String hostname ) throws RemoteException, MalformedURLException, NotBoundException {
 		super();
 
 		this.placeTotal = nbPlace;
@@ -32,9 +32,9 @@ public class Porte extends UnicastRemoteObject implements iPorte, Client {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		this.reso = (Reso)Naming.lookup("rmi://192.168.1.9/"+Reso.NAME);
+		this.reso = (Reso)Naming.lookup("rmi://"+hostname+"/"+Reso.NAME);
 		this.id = this.reso.declareClient(this);
-		((IParking)Naming.lookup("rmi://192.168.1.9/"+IParking.NAME)).declarePorte( this );
+		((IParking)Naming.lookup("rmi://"+hostname+"/"+IParking.NAME)).declarePorte( this );
 	}
 
 	@Override
@@ -66,23 +66,23 @@ public class Porte extends UnicastRemoteObject implements iPorte, Client {
 		return id;
 	}
 
-	public static void launchPorte( ParkingAlgo algorithm, int nbPorte){
+	public static void launchPorte( ParkingAlgo algorithm, int nbPorte, String hostname){
 		if( nbPorte < 0 ){
 			nbPorte = 0 - nbPorte;
 		}
 		try {
 			for( int i = 0; i < nbPorte; i++ ){
-				CaracParking cara = ((IParking) Naming.lookup("//192.168.1.9:1099/"+IParking.NAME)).getCarac();
+				CaracParking cara = ((IParking) Naming.lookup("//"+hostname+":1099/"+IParking.NAME)).getCarac();
 	
 				switch( algorithm ){
 				case ABCAST:
-					new PorteABCAST(cara.getNbPlace());
+					new PorteABCAST(cara.getNbPlace(), hostname);
 					break;
 				case NAIMI_TREHEL:
-					new PorteNaimiTrehel(cara.getNbPlace());
+					new PorteNaimiTrehel(cara.getNbPlace(), hostname);
 					break;
 				case RICART_AGRAWALA:
-					new PorteRicartAgrawala(cara.getNbPlace(), cara.getNbPorte());
+					new PorteRicartAgrawala(cara.getNbPlace(), cara.getNbPorte(), hostname);
 					break;
 				}
 			}
@@ -92,31 +92,18 @@ public class Porte extends UnicastRemoteObject implements iPorte, Client {
 	}
 	
 	public static void main(String[] args) {
-		String[] strs;
-		try {
-			strs = Naming.list("//192.168.1.9/");
-			System.out.println("liste");
-			for( String str: strs ){
-				System.out.println(str);
-			}
-		} catch (RemoteException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		} catch (MalformedURLException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		
+		String hostname = "192.168.1.1";
 		int nbPorte = 1;
 		ParkingAlgo algo = ParkingAlgo.RICART_AGRAWALA;
-		if( args.length > 1 ){
+		if( args.length > 2 ){
 			nbPorte = Integer.valueOf(args[0]);
+			hostname = args[2];
 			try{
 				algo = ParkingAlgo.valueOf(args[1]);
 			}catch( Exception e ){
 				System.err.println("L'algo n'est pas reconnu, l'ago par defaut est Ricart agrawala");
 			}
 		}
-		launchPorte(algo, nbPorte);
+		launchPorte(algo, nbPorte, hostname);
 	}
 }

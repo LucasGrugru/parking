@@ -41,8 +41,8 @@ public class PorteABCAST extends Porte {
 	 * Constructeur
 	 * @param place nombre de place du parking
 	 */
-	protected PorteABCAST( int nbPlace) throws RemoteException, MalformedURLException, NotBoundException {
-		super( nbPlace);
+	protected PorteABCAST( int nbPlace, String hostname) throws RemoteException, MalformedURLException, NotBoundException {
+		super( nbPlace, hostname);
 		this.estampille = 0;
 		liste_message = new TreeSet<MessageABCAST>();
 	}
