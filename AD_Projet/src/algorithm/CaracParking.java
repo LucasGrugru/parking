@@ -1,6 +1,8 @@
 package algorithm;
 
-public class CaracParking {
+import java.io.Serializable;
+
+public class CaracParking implements Serializable{
 	private int nbPlace;
 	private int nbPorte;
 	
