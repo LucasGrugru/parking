@@ -26,12 +26,6 @@ public class Porte extends UnicastRemoteObject implements iPorte, Client {
 
 		this.placeTotal = nbPlace;
 		this.placeDisponible = this.placeTotal;
-		try {
-			System.out.println(InetAddress.getLocalHost().getHostAddress());
-		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		this.reso = (Reso)Naming.lookup("rmi://"+hostname+"/"+Reso.NAME);
 		this.id = this.reso.declareClient(this);
 		((IParking)Naming.lookup("rmi://"+hostname+"/"+IParking.NAME)).declarePorte( this );

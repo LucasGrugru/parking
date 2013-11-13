@@ -5,12 +5,11 @@ import java.rmi.RemoteException;
 
 public class MyLogger {
 	 private static IRMILogger logger;
-	 
 
 	 public static void createLogger(){
 		 if( logger == null ){
 			 try {
-				logger = (IRMILogger) Naming.lookup("rmi://192.168.1.9:1099/"+IRMILogger.NAME);
+				logger = (IRMILogger) Naming.lookup("rmi://localhost:1099/"+IRMILogger.NAME);
 			} catch (Exception e) {
 				logger = null;
 			} 

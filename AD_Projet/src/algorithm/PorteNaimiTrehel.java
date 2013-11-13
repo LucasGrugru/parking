@@ -52,6 +52,7 @@ public class PorteNaimiTrehel  extends Porte {
 	private synchronized void demandeSectionCritique() throws RemoteException, InterruptedException {
 		this.sc = true;
 		if (this.owner != -1) {
+			MyLogger.log("P"+super.id+"|REQ|"+this.owner+"|ENVOI");
 			super.reso.sendMessage(super.id, this.owner, new Message("REQ", super.id));
 			this.owner = -1;
 			// TODO c'est moche ! c'est toi le moche
@@ -67,12 +68,14 @@ public class PorteNaimiTrehel  extends Porte {
 				this.next = needer;
 			} else {
 				this.jeton = false;
+				MyLogger.log("P"+super.id+"|JETON|"+needer+"|ENVOI");
 				super.reso.sendMessage(super.id, needer, new Message("JETON"));
 				synchronized(this) {
 					notify();
 				}
 			}
 		} else {
+			MyLogger.log("P"+super.id+"|REQ|"+this.owner+"|ENVOI");
 			super.reso.sendMessage(super.id, this.owner, new Message("REQ", needer));
 		}
 		this.owner = needer;
@@ -86,6 +89,7 @@ public class PorteNaimiTrehel  extends Porte {
 	private void sortieSectionCritique() throws RemoteException {
 		this.sc = false;
 		if(this.next != -1) {
+			MyLogger.log("P"+super.id+"|JETON|"+this.next+"|ENVOI");
 			super.reso.sendMessage(super.id, this.next, new Message("JETON"));
 			notify();
 			this.jeton = false;
@@ -96,15 +100,15 @@ public class PorteNaimiTrehel  extends Porte {
 	@Override
 	public synchronized void demandeEntree() {
 		try {
-			MyLogger.log("[PORTE] Demande SC sur la porte "+super.id);
+			//MyLogger.log("[PORTE] Demande SC sur la porte P"+super.id+"|ENTREE|");
 			demandeSectionCritique();
 			//ENTREE SECTION CRITIQUE
 			
 			while(super.placeDisponible <= 0) {
-				MyLogger.log("[PORTE] Attente de place libre sur la porte "+super.id);
+				//MyLogger.log("[PORTE] Attente de place libre sur la porte "+super.id);
 				wait();
 			}
-			MyLogger.log("[PORTE] Entrée de voiture sur la porte "+super.id);
+			//MyLogger.log("[PORTE] Entrée de voiture sur la porte "+super.id);
 			super.placeDisponible--;
 			
 			Set<Integer> allClients = super.reso.getClients();
@@ -112,8 +116,10 @@ public class PorteNaimiTrehel  extends Porte {
 			compteur = 0;
 			
 			for (Integer i : allClients) {
-				if(i != super.id)
+				if(i != super.id) {
+					MyLogger.log("P"+super.id+"|ENTREE|"+i+"|ENVOI");
 					super.reso.sendMessage(super.id, i, new Message("ENTREE_DE_VOITURE"));
+				}
 			}
 			
 			while(compteur >= super.reso.getClients().size() - 1) {
@@ -134,7 +140,7 @@ public class PorteNaimiTrehel  extends Porte {
 	
 	@Override
 	public void demandeSortie() {
-		MyLogger.log("[PORTE] Sortie de voiture sur la porte "+super.id);
+		//MyLogger.log("[PORTE] Sortie de voiture sur la porte "+super.id);
 		super.placeDisponible++;
 		synchronized(this) {
 			notify();
@@ -143,8 +149,10 @@ public class PorteNaimiTrehel  extends Porte {
 			Set<Integer> allClients = super.reso.getClients();
 
 			for (Integer i : allClients) {
-				if(i != super.id)
+				if(i != super.id) {
+					MyLogger.log("P"+super.id+"|SORTIE|"+i+"|ENVOI");
 					super.reso.sendMessage(super.id, i, new Message("SORTIE_DE_VOITURE"));
+				}
 			}
 		} catch (RemoteException e) {
 			e.printStackTrace();
@@ -155,15 +163,21 @@ public class PorteNaimiTrehel  extends Porte {
 	public void receiveMessage(int from, int to, Serializable msg)
 			throws RemoteException {
 		if(((Message)msg).getMessage().equals("JETON")) {
+			MyLogger.log("P"+super.id+"|JETON|"+from+"|RECOIT");
 			accepteJETON();
 		} else if(((Message)msg).getMessage().equals("ENTREE_DE_VOITURE_RECU")) {
+			MyLogger.log("P"+super.id+"|ENTREE_RECU|"+from+"|RECOIT");
 			compteur++;
 		} else if(((Message)msg).getMessage().equals("REQ")) {
+			MyLogger.log("P"+super.id+"|REQ|"+from+"|RECOIT");
 			accepteREQ(from, ((Message)msg).getDemandeur());
 		} else if(((Message)msg).getMessage().equals("ENTREE_DE_VOITURE")) {
+			MyLogger.log("P"+super.id+"|ENTREE|"+from+"|RECOIT");
 			super.placeDisponible--;
+			MyLogger.log("P"+super.id+"|ENTREE_RECU|"+from+"|ENVOI");
 			super.reso.sendMessage(super.id, ((Message)msg).getDemandeur(), new Message("ENTREE_DE_VOITURE_RECU"));
 		} else if(((Message)msg).getMessage().equals("SORTIE_DE_VOITURE")) {
+			MyLogger.log("P"+super.id+"|SORTIE|"+from+"|RECOIT");
 			super.placeDisponible++;
 		} else {
 			System.out.println("[PORTE] Error, unknown received message : "+((Message)msg).getMessage());

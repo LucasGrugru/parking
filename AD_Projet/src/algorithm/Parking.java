@@ -76,6 +76,7 @@ public class Parking extends UnicastRemoteObject implements IParking{
 		System.out.println("P"+porte.getID()+" declare");
 		boolean ajout = portes.add( porte );
 		if( ajout ){
+			System.out.println( portes.size()+" - "+nbPorte);
 			if( portes.size() == nbPorte ){
 				new Thread( new Runnable() {
 					public void run() {

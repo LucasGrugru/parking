@@ -10,10 +10,7 @@ public class MyFormatter extends Formatter {
 
 	public String format(LogRecord rec) {
 		StringBuffer buf = new StringBuffer(1000);
-
-		buf.append("\n\n--------------------------\n--  ");
-		buf.append(calcDate(rec.getMillis()));
-		buf.append("  --\n");
+		buf.append( "\n");
 		buf.append(formatMessage(rec));
 		return buf.toString();
 	}

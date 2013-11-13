@@ -75,7 +75,7 @@ public class PorteABCAST extends Porte {
 	@Override
 	public synchronized void demandeEntree() {
 		try {
-			MyLogger.log("[P"+super.id+"] Demande d'entrée");
+			//MyLogger.log("[P"+super.id+"] Demande d'entrée");
 			
 			Set<Integer> allClients = super.reso.getClients();
 	
@@ -84,12 +84,13 @@ public class PorteABCAST extends Porte {
 			
 			for (Integer i : allClients) {
 				if(i != super.id) {
+					MyLogger.log("P"+super.id+"|ENTREE|H:"+this.estampille+"|"+i+"|ENVOI");
 					super.reso.sendMessage(super.id, i, 
 							new MessageABCAST("ENTREE_DE_VOITURE", this.estampille));
 				}
 			}
 			
-			MyLogger.log("[P"+super.id+"] Attente de reception des messages de confirmation");
+			//MyLogger.log("[P"+super.id+"] Attente de reception des messages de confirmation");
 			while(this.temp_compteur < allClients.size() - 1) {
 				wait();
 			}
@@ -102,9 +103,10 @@ public class PorteABCAST extends Porte {
 			
 			if(super.placeDisponible > 0) {
 				this.estampille = this.temp_estampille;
-				MyLogger.log("[P"+super.id+"] La voiture est autorisée a entrer, avec l'estampille "+this.estampille);
+				//MyLogger.log("[P"+super.id+"] La voiture est autorisée a entrer, avec l'estampille "+this.estampille);
 				for (Integer i : allClients) {
 					if(i != super.id) {
+						MyLogger.log("P"+super.id+"|ENTREE_FINAL|H:"+this.estampille+"|"+i+"|ENVOI");
 						super.reso.sendMessage(super.id, i, 
 								new MessageABCAST("VOITURE_ENTREE", this.estampille));
 					}
@@ -112,7 +114,7 @@ public class PorteABCAST extends Porte {
 				this.liste_message.add(new MessageABCAST("VOITURE_ENTREE", this.estampille));
 				this.estampille++;
 			} else {
-				MyLogger.log("[P"+super.id+"] Pas de place disponible. La voiture est refusé");
+				//MyLogger.log("[P"+super.id+"] Pas de place disponible. La voiture est refusé");
 			}
 			
 		} catch (RemoteException e) {
@@ -125,30 +127,32 @@ public class PorteABCAST extends Porte {
 	@Override
 	public synchronized void demandeSortie() {
 		try {
-			MyLogger.log("[P"+super.id+"] Demande de sortie sur la porte "+super.id);
+			//MyLogger.log("[P"+super.id+"] Demande de sortie sur la porte "+super.id);
 			
 			Set<Integer> allClients = super.reso.getClients();
 	
 			this.temp_compteur = 0;
 			this.temp_estampille = this.estampille;
-			MyLogger.log("[P"+super.id+"] Envoie de demande de confirmation à toutes les portes");
+			//MyLogger.log("[P"+super.id+"] Envoie de demande de confirmation à toutes les portes");
 			for (Integer i : allClients) {
 				if(i != super.id) {
+					MyLogger.log("P"+super.id+"|SORTIE|H:"+this.estampille+"|"+i+"|ENVOI");
 					super.reso.sendMessage(super.id, i, 
 							new MessageABCAST("SORTIE_DE_VOITURE", this.estampille));
 				}
 			}
 			
-			MyLogger.log("[P"+super.id+"] Attente de reception des messages de confirmation");
+			//MyLogger.log("[P"+super.id+"] Attente de reception des messages de confirmation");
 			while(temp_compteur < allClients.size() - 1) {
 				wait();
 			}
 			
 			this.estampille = this.temp_estampille;
 			this.liste_message.add(new MessageABCAST("VOITURE_SORTIE", this.estampille));
-			MyLogger.log("[P"+super.id+"] La voiture est autorisé a sortir, avec l'estampille "+this.estampille);
+			//MyLogger.log("[P"+super.id+"] La voiture est autorisé a sortir, avec l'estampille "+this.estampille);
 			for (Integer i : allClients) {
 				if(i != super.id) {
+					MyLogger.log("P"+super.id+"|SORTIE_FINAL|H:"+this.estampille+"|"+i+"|ENVOI");
 					super.reso.sendMessage(super.id, i, 
 							new MessageABCAST("VOITURE_SORTIE", this.estampille));
 				}
@@ -166,32 +170,40 @@ public class PorteABCAST extends Porte {
 	public synchronized void receiveMessage(int from, int to, Serializable msg)
 			throws RemoteException {
 		if(((MessageABCAST)msg).getMessage().equals("ENTREE_DE_VOITURE")) {
-			MyLogger.log("[P"+super.id+"] Envoie de confirmation d'entrée avec estampille à "+this.estampille);
+			MyLogger.log("P"+super.id+"|ENTREE_CONFIRM|H:"+((MessageABCAST)msg).getEstampille()+"|"+from+"|RECU");
+			//MyLogger.log("[P"+super.id+"] Envoie de confirmation d'entrée avec estampille à "+this.estampille);
+			MyLogger.log("P"+super.id+"|ENTREE_CONFIRM|H:"+Math.max(this.estampille, ((MessageABCAST)msg).getEstampille())+"|"+from+"|ENVOI");
 			super.reso.sendMessage(super.id, from, 
 					new MessageABCAST("CONFIRMATION_ENTREE_DE_VOITURE", 
 							Math.max(this.estampille, ((MessageABCAST)msg).getEstampille())));
 			
 		} else if(((MessageABCAST)msg).getMessage().equals("SORTIE_DE_VOITURE")) {
-			MyLogger.log("[P"+super.id+"] Envoie de confirmation de sortie avec estampille à "+this.estampille);
+			MyLogger.log("P"+super.id+"|SORTIE|H:"+((MessageABCAST)msg).getEstampille()+"|"+from+"|RECU");
+			//MyLogger.log("[P"+super.id+"] Envoie de confirmation de sortie avec estampille à "+this.estampille);
+			MyLogger.log("P"+super.id+"|SORTIE_CONFIRM|H:"+Math.max(this.estampille, ((MessageABCAST)msg).getEstampille())+"|"+from+"|ENVOI");
 			super.reso.sendMessage(super.id, from, 
 					new MessageABCAST("CONFIRMATION_SORTIE_DE_VOITURE", 
 							Math.max(this.estampille, ((MessageABCAST)msg).getEstampille())));
 			
 		} else if(((MessageABCAST)msg).getMessage().equals("CONFIRMATION_ENTREE_DE_VOITURE")) {
+			MyLogger.log("P"+super.id+"|ENTREE_CONFIRM|H:"+((MessageABCAST)msg).getEstampille()+"|"+from+"|RECU");
 			this.temp_compteur++;
 			this.temp_estampille = Math.max(this.temp_estampille, ((MessageABCAST)msg).getEstampille());
 			notify();
 			
 		} else if(((MessageABCAST)msg).getMessage().equals("CONFIRMATION_SORTIE_DE_VOITURE")) {
+			MyLogger.log("P"+super.id+"|SORTIE_CONFIRM|H:"+((MessageABCAST)msg).getEstampille()+"|"+from+"|RECU");
 			this.temp_compteur++;
 			this.temp_estampille = Math.max(this.temp_estampille, ((MessageABCAST)msg).getEstampille());
 			notify();
 			
 		} else if(((MessageABCAST)msg).getMessage().equals("VOITURE_ENTREE")) {
+			MyLogger.log("P"+super.id+"|ENTREE_FINAL|H:"+((MessageABCAST)msg).getEstampille()+"|"+from+"|RECU");
 			this.liste_message.add((MessageABCAST)msg);
 			
 			
 		} else if(((MessageABCAST)msg).getMessage().equals("VOITURE_SORTIE")) {
+			MyLogger.log("P"+super.id+"|SORTIE_FINAL|H:"+((MessageABCAST)msg).getEstampille()+"|"+from+"|RECU");
 			this.liste_message.add((MessageABCAST)msg);
 			
 		} else {

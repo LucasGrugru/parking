@@ -42,7 +42,6 @@ public class PorteRicartAgrawala extends Porte {
 
 	@Override
 	public synchronized void  demandeEntree() {
-		printDebug("Recoit voiture");
 		this.horloge++;
 		if( placeDisponible == 0 ) return;
 		isEntree = true;
@@ -50,7 +49,7 @@ public class PorteRicartAgrawala extends Porte {
 		reponsesAttendues = portes.size();
 		for( Integer porte: portes ){
 			try {
-				printDebug("demande authorisation entree a "+porte);
+				printDebug(MESSAGE_ENTREE+"|"+this.horloge+"|P"+porte+"|ENVOI");
 				reso.sendMessage(this.id, porte, new Message(MESSAGE_ENTREE+"|"+this.horloge, this.id));
 			} catch (RemoteException e) {
 				e.printStackTrace();
@@ -66,14 +65,13 @@ public class PorteRicartAgrawala extends Porte {
 				}
 			}
 		}
-		printDebug("Toute les reponses ok");
 		isEntree = false;
 		
 		for( Integer porte: porteAttente ){
 			if( placeDisponible > 0 )
 				placeDisponible--;
 			try {
-				printDebug("Retourne l'accord a "+porte);
+				printDebug(MESSAGE_ACCORD+"|P"+porte+"|ENVOI");
 				reso.sendMessage(this.id, porte, new Message(MESSAGE_ACCORD, this.id));
 			} catch (RemoteException e) {
 				e.printStackTrace();
@@ -82,16 +80,14 @@ public class PorteRicartAgrawala extends Porte {
 		porteAttente.clear();
 		if( placeDisponible > 0){
 			placeDisponible--;
-			printDebug("diminue le nombre de place. now "+placeDisponible);
 		}
 	}
 	
 	@Override
 	public synchronized void demandeSortie() {
-		printDebug("Voiture sort now "+placeDisponible);
 		for( Integer porte: portes ){
 			try {
-				printDebug("previent "+porte+" qu'une voiture est sortit");
+				printDebug(MESSAGE_SORTIE+"|P"+porte+"|ENVOI");
 				reso.sendMessage(this.id, porte, new Message(MESSAGE_SORTIE,this.id));
 			} catch (RemoteException e) {
 				e.printStackTrace();
@@ -107,20 +103,19 @@ public class PorteRicartAgrawala extends Porte {
 				if( placeDisponible > 0 )
 					placeDisponible--;
 				try {
-					printDebug("envoi accord a "+porte);
+					printDebug(MESSAGE_ACCORD+"|P"+porte+"|ENVOI");
 					reso.sendMessage(this.id, porte, new Message(MESSAGE_ACCORD, this.id));
 				} catch (RemoteException e) {
 					e.printStackTrace();
 				}
 			}else{
-				printDebug("Met en attente "+porte);
 				porteAttente.add( porte );
 			}
 		}else{
 			if( placeDisponible > 0 )
 				placeDisponible--;
 			try {
-				printDebug("Envoi accord a "+porte);
+				printDebug(MESSAGE_ACCORD+"|P"+porte+"|ENVOI");
 				reso.sendMessage(this.id, porte, new Message(MESSAGE_ACCORD, this.id));
 			} catch (RemoteException e) {
 				e.printStackTrace();
@@ -130,7 +125,6 @@ public class PorteRicartAgrawala extends Porte {
 	
 	public void getAccept(){
 		reponsesAttendues--;
-		printDebug("reponse encore attendu "+reponsesAttendues);
 		if( reponsesAttendues == 0 ){
 			synchronized (this) {
 				notify();
@@ -140,7 +134,6 @@ public class PorteRicartAgrawala extends Porte {
 	
 	public void getSortie(){
 		placeDisponible++;
-		printDebug("Place disponible "+placeDisponible);
 	}
 	
 	@Override
@@ -150,14 +143,14 @@ public class PorteRicartAgrawala extends Porte {
 		Message message = (Message) msg;
 		String messageText = message.getMessage();
 		if( messageText.equals(MESSAGE_ACCORD) ){
-			printDebug("Recoit un message d'accord de "+from);
+			printDebug(MESSAGE_ACCORD+"|P"+from+"|RECOIT");
 			getAccept();
 		}else if( messageText.equals(MESSAGE_SORTIE)){
-			printDebug("Recoit un message de sortie de "+from);
+			printDebug(MESSAGE_SORTIE+"|P"+from+"|RECOIT");
 			getSortie();
 		}else if( messageText.startsWith(MESSAGE_ENTREE)){
 			int horloge = Integer.valueOf( messageText.substring(7));
-			printDebug("Recoit un message d'entree: de "+from);
+			printDebug(MESSAGE_ENTREE+"|"+horloge+"|P"+from+"|RECOIT");
 			getENTREE(horloge, from);
 		}
 		}catch( Exception e ){
@@ -165,24 +158,7 @@ public class PorteRicartAgrawala extends Porte {
 		}
 	}
 	
-	public static void main(String[] args) {
-		try {
-			new PorteRicartAgrawala( Integer.valueOf( args[0]), Integer.valueOf( args[1]), "192.168.1.9");
-		} catch (NumberFormatException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (NotBoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
 	public void printDebug(String s){
-		MyLogger.debug("[P"+this.id+"] "+s);
+		MyLogger.debug("P"+this.id+"|"+s);
 	}
 }
