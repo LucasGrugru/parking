@@ -41,7 +41,7 @@ public class PorteRicartAgrawala extends Porte {
 
 
 	@Override
-	public void demandeEntree() {
+	public synchronized void  demandeEntree() {
 		printDebug("Recoit voiture");
 		this.horloge++;
 		if( placeDisponible == 0 ) return;
@@ -87,7 +87,7 @@ public class PorteRicartAgrawala extends Porte {
 	}
 	
 	@Override
-	public void demandeSortie() {
+	public synchronized void demandeSortie() {
 		printDebug("Voiture sort now "+placeDisponible);
 		for( Integer porte: portes ){
 			try {

@@ -11,6 +11,7 @@ import algorithm.Parking;
 
 public class Launcher {
 
+	// -Djava.rmi.server.hostname=IP
 	public static void main(String[] args) {
 		int nbPlace = 5;
 		int nbPorte = 5;

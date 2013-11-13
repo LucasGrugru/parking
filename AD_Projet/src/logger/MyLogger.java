@@ -10,7 +10,7 @@ public class MyLogger {
 	 public static void createLogger(){
 		 if( logger == null ){
 			 try {
-				logger = (IRMILogger) Naming.lookup(IRMILogger.NAME);
+				logger = (IRMILogger) Naming.lookup("rmi://192.168.1.9:1099/"+IRMILogger.NAME);
 			} catch (Exception e) {
 				logger = null;
 			} 

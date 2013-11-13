@@ -3,6 +3,8 @@ package algorithm;
 import java.io.Serializable;
 
 public class CaracParking implements Serializable{
+
+	private static final long serialVersionUID = 1L;
 	private int nbPlace;
 	private int nbPorte;
 	
